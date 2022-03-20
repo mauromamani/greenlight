@@ -21,9 +21,9 @@ type UserModel struct {
 // Insert:
 func (u UserModel) Insert(user *User) error {
 	stmt := `
-		INSERT INTO users (name, email, password_hash, actived)
+		INSERT INTO users (name, email, password_hash, activated)
 		VALUES ($1, $2, $3, $4)
-		RETURNING id, create_at, version
+		RETURNING id, created_at, version
 	`
 
 	args := []interface{}{user.Name, user.Email, user.Password.hash, user.Activated}
