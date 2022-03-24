@@ -50,7 +50,7 @@ func (u UserModel) GetByEmail(email string) (*User, error) {
 	stmt := `
 		SELECT  id, created_at, name, email, password_hash, activated, version
 		FROM users
-		WHERE id = $1
+		WHERE email = $1
 	`
 
 	var user User
