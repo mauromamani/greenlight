@@ -54,12 +54,21 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// Add basic permission for a new user
+	err = app.models.Permissions.AddForUser(uint64(user.ID), "movies:read")
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// Create a authentication token
 	token, err := app.models.Tokens.New(user.ID, 3*24*time.Hour, data.ScopeActivation)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
+	// Send confirmation email with go routine
 	app.background(func() {
 		data := map[string]interface{}{
 			"activationToken": token.Plaintext,
