@@ -4,7 +4,6 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
-	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/felixge/httpsnoop"
 	"github.com/mauromamani/greenlight/internal/data"
 	"github.com/mauromamani/greenlight/internal/validator"
+	"github.com/tomasen/realip"
 	"golang.org/x/time/rate"
 )
 
@@ -67,11 +67,7 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 		// Codigo que se ejecuta cada vez que se realiza una peticion
 
 		if app.config.limiter.enabled {
-			ip, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				app.serverErrorResponse(w, r, err)
-				return
-			}
+			ip := realip.FromRequest(r)
 
 			// lock the mutex to prevent this code from being executed concurrently
 			mu.Lock()
